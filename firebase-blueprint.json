@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user account information and preferences.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique Firebase Auth UID." },
+        "displayName": { "type": "string", "description": "User's full name." },
+        "email": { "type": "string", "format": "email", "description": "User's email address." },
+        "photoURL": { "type": "string", "format": "uri", "description": "URL to user's profile picture." },
+        "role": { "type": "string", "enum": ["user", "admin"], "description": "User's role in the system." },
+        "plan": { "type": "string", "enum": ["free", "premium"], "description": "User's subscription plan." },
+        "language": { "type": "string", "description": "Preferred language (e.g., 'en', 'ms')." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Account creation timestamp." }
+      },
+      "required": ["uid", "email", "role", "plan"]
+    },
+    "Recipe": {
+      "title": "Recipe",
+      "description": "A culinary recipe with ingredients and instructions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique recipe ID." },
+        "title": { "type": "string", "description": "Name of the dish." },
+        "description": { "type": "string", "description": "Brief overview of the dish." },
+        "category": { "type": "string", "description": "Category (e.g., 'Breakfast', 'Traditional')." },
+        "image": { "type": "string", "format": "uri", "description": "Main recipe image URL." },
+        "prepTime": { "type": "string", "description": "Preparation time (e.g., '45 mins')." },
+        "calories": { "type": "string", "description": "Calorie count." },
+        "servings": { "type": "string", "description": "Number of servings." },
+        "difficulty": { "type": "string", "enum": ["Beginner", "Intermediate", "Expert"] },
+        "ingredients": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "amount": { "type": "string" }
+            }
+          }
+        },
+        "instructions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": { "type": "number" },
+              "title": { "type": "string" },
+              "text": { "type": "string" },
+              "image": { "type": "string", "format": "uri" }
+            }
+          }
+        },
+        "isPremium": { "type": "boolean", "description": "Whether the recipe is locked for premium users." },
+        "authorUid": { "type": "string", "description": "UID of the creator." }
+      },
+      "required": ["title", "category", "prepTime", "isPremium"]
+    },
+    "PaymentApproval": {
+      "title": "Payment Approval",
+      "description": "A pending request for premium subscription approval.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "UID of the user requesting approval." },
+        "userName": { "type": "string", "description": "Name of the user." },
+        "plan": { "type": "string", "description": "Plan being requested." },
+        "refCode": { "type": "string", "description": "Payment reference code." },
+        "amount": { "type": "string", "description": "Amount paid." },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "refCode", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    },
+    "/recipes/{recipeId}": {
+      "schema": "Recipe",
+      "description": "Public and premium recipes."
+    },
+    "/paymentApprovals/{approvalId}": {
+      "schema": "PaymentApproval",
+      "description": "Requests for manual payment verification."
+    }
+  }
+}
